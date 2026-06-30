@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Search, Users, Calendar as CalendarIcon, LayoutDashboard } from "lucide-react";
-import { navItems, mockLeadPipeline, upcomingAppointments } from "../data";
+import { Search, Users, Calendar as CalendarIcon, LayoutDashboard, Loader2 } from "lucide-react";
+import { navItems } from "../data";
+import { CRMLead } from "../types";
 
 interface CommandBarProps {
   setActiveTab: (tab: string) => void;
@@ -9,6 +10,10 @@ interface CommandBarProps {
 export default function CommandBar({ setActiveTab }: CommandBarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  
+  const [leads, setLeads] = useState<CRMLead[]>([]);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -24,22 +29,43 @@ export default function CommandBar({ setActiveTab }: CommandBarProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      // Fetch live data when command bar opens
+      const fetchData = async () => {
+        setLoading(true);
+        try {
+          const [leadsRes, apptsRes] = await Promise.all([
+            fetch('/api/leads'),
+            fetch('/api/appointments')
+          ]);
+          if (leadsRes.ok) setLeads(await leadsRes.json());
+          if (apptsRes.ok) setAppointments(await apptsRes.json());
+        } catch (error) {
+          console.error("Failed to fetch command bar data", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  const allLeads = Object.values(mockLeadPipeline).flat();
   const lowerQuery = query.toLowerCase();
 
   const filteredNav = query ? navItems.filter((item) =>
     item.label.toLowerCase().includes(lowerQuery)
   ) : navItems;
 
-  const filteredLeads = query ? allLeads.filter(lead => 
+  const filteredLeads = query ? leads.filter(lead => 
     lead.name.toLowerCase().includes(lowerQuery) || 
     lead.email.toLowerCase().includes(lowerQuery) || 
     lead.phone.toLowerCase().includes(lowerQuery)
   ).slice(0, 3) : [];
 
-  const filteredAppointments = query ? upcomingAppointments.filter(apt => 
+  const filteredAppointments = query ? appointments.filter(apt => 
     apt.customerName.toLowerCase().includes(lowerQuery) ||
     apt.service.toLowerCase().includes(lowerQuery) 
   ).slice(0, 3) : [];
@@ -57,14 +83,15 @@ export default function CommandBar({ setActiveTab }: CommandBarProps) {
           <Search className="w-5 h-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Search commands..."
+            placeholder="Search commands, leads, or appointments..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent text-white outline-none placeholder:text-gray-500"
             autoFocus
           />
+          {loading && <Loader2 className="w-4 h-4 text-[#FF4F00] animate-spin" />}
         </div>
-        <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+        <div className="space-y-4 max-h-[60vh] overflow-y-auto hidden-scrollbar">
           {filteredNav.length > 0 && (
             <div>
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">Navigation</div>
@@ -134,7 +161,7 @@ export default function CommandBar({ setActiveTab }: CommandBarProps) {
             </div>
           )}
 
-          {filteredNav.length === 0 && filteredLeads.length === 0 && filteredAppointments.length === 0 && (
+          {filteredNav.length === 0 && filteredLeads.length === 0 && filteredAppointments.length === 0 && !loading && (
             <div className="text-center py-8 text-gray-500 text-sm">No results found.</div>
           )}
         </div>
