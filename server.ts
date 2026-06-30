@@ -1,9 +1,14 @@
 import express from 'express';
-import path from 'path';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import { Pool } from 'pg';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -101,6 +106,31 @@ async function initDb() {
       `);
     }
 
+    // 4. Users Table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+  email_verified BOOLEAN DEFAULT FALSE,
+          verification_token VARCHAR(255),
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        role VARCHAR(20) DEFAULT 'user'
+      )
+    `);
+
+    // Seed Super-admin user
+    const superAdminEmail = 'Puspharaj.m2003@gmail.com';
+    const superAdminCheck = await client.query('SELECT * FROM users WHERE email = $1', [superAdminEmail]);
+    if (superAdminCheck.rows.length === 0) {
+      console.log('Seeding Super-admin profile...');
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash('Push@2003', salt);
+      await client.query(`
+        INSERT INTO users (name, email, password, role) VALUES ($1, $2, $3, $4)
+      `, ['Puspharaj M', superAdminEmail, hashedPassword, 'super-admin']);
+    }
+
     console.log('Database verification and seeding completed successfully.');
   } catch (err) {
     console.error('Error setting up database:', err);
@@ -119,6 +149,92 @@ initDb().then(() => {
 
 // API Routes
 
+// --- Forgot Password Route ---
+app.post('/api/auth/forgot-password', async (req, res): Promise<any> => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+
+    if (!user) {
+      // Do not disclose whether the email exists
+      return res.json({ message: 'If the email exists, instructions have been sent' });
+    }
+
+    // TODO: Integrate real email service (e.g., SendGrid, SES) to email a reset token/link.
+    console.log(`Password reset requested for ${email}`);
+    res.json({ message: 'If the email exists, instructions have been sent' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Auth Routes ---
+app.post('/api/auth/signup', async (req, res): Promise<any> => {
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return res.status(400).json({ error: 'Name, email, and password are required' });
+  }
+
+  try {
+    const userCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const result = await pool.query(
+      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, role',
+      [name, email, hashedPassword]
+    );
+
+    const user = result.rows[0];
+    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.status(201).json({ user, token });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/auth/login', async (req, res): Promise<any> => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password are required' });
+  }
+
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = result.rows[0];
+    
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      token
+    });
+  } catch (err: any) {
+    console.error('Login error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Existing Routes ---
 // 1. Fetch all appointments
 app.get('/api/appointments', async (req, res) => {
   try {
@@ -193,6 +309,9 @@ app.get('/api/revenue', async (req, res) => {
 });
 
 // Serve frontend assets in production
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 app.use(express.static(path.join(__dirname, 'dist')));
 
 app.get('*', (req, res) => {
