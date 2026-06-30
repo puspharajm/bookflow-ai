@@ -55,9 +55,11 @@ export default function CommandBar({ setActiveTab }: CommandBarProps) {
 
   const lowerQuery = query.toLowerCase();
 
-  const filteredNav = query ? navItems.filter((item) =>
+  const allNavItems = navItems.flatMap(group => group.items);
+
+  const filteredNav = query ? allNavItems.filter((item) =>
     item.label.toLowerCase().includes(lowerQuery)
-  ) : navItems;
+  ) : allNavItems;
 
   const filteredLeads = query ? leads.filter(lead => 
     lead.name.toLowerCase().includes(lowerQuery) || 

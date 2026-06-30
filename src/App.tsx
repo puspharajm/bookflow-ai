@@ -8,6 +8,10 @@ import CommandBar from "./components/CommandBar";
 import LandingPage from "./components/LandingPage";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import Appointments from "./components/Appointments";
+import Revenue from "./components/Revenue";
+import ComingSoon from "./components/ComingSoon";
+import { navItems } from "./data";
 
 export default function App() {
   const [view, setView] = useState<"landing" | "login" | "signup" | "app">("landing");
@@ -78,19 +82,21 @@ export default function App() {
         <div className="fixed top-0 left-1/4 w-[800px] h-[400px] bg-[#FF4F00]/5 rounded-full blur-[120px] pointer-events-none -z-10" />
         
         {activeTab === "dashboard" && <Dashboard />}
-        {activeTab === "calendar" && (
-          <div className="flex items-center justify-center h-full">
-            <h2 className="text-gray-400">Calendar View Upcoming</h2>
-          </div>
-        )}
         {activeTab === "crm" && <CRMPipeline />}
+        {activeTab === "appointments" && <Appointments />}
+        {activeTab === "revenue" && <Revenue />}
         {activeTab === "integrations" && <Integrations />}
-        {activeTab === "automations" && (
-          <div className="flex items-center justify-center h-full">
-            <h2 className="text-gray-400">Automations View Upcoming</h2>
-          </div>
+        {activeTab === "admin" && <WhiteLabelSettings />}
+        
+        {/* Fallback for all other tabs */}
+        {!["dashboard", "crm", "appointments", "revenue", "integrations", "admin"].includes(activeTab) && (
+          <ComingSoon 
+            title={
+              navItems.flatMap(g => g.items).find(i => i.id === activeTab)?.label || 
+              activeTab.charAt(0).toUpperCase() + activeTab.slice(1)
+            } 
+          />
         )}
-        {activeTab === "settings" && <WhiteLabelSettings />}
       </main>
     </div>
   );
