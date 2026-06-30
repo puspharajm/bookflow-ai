@@ -88,7 +88,7 @@ export default function Dashboard() {
         <div className="text-sm text-gray-500">Tuesday, June 30</div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {statCards.map((stat, i) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

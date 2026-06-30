@@ -107,9 +107,9 @@ export default function CRMPipeline() {
           <p className="text-gray-400 font-medium">Loading live pipeline...</p>
         </div>
       ) : (
-        <div className="flex-1 flex gap-6 overflow-x-auto pb-6 relative z-10 hidden-scrollbar">
+        <div className="flex-1 flex gap-6 overflow-x-auto pb-6 relative z-10 hidden-scrollbar snap-x snap-mandatory">
           {columns.map((col, idx) => (
-            <div key={col.id} className="min-w-[320px] max-w-[320px] flex flex-col">
+            <div key={col.id} className="min-w-[85vw] md:min-w-[320px] max-w-[85vw] md:max-w-[320px] flex flex-col snap-center md:snap-align-none">
               <div className={`px-4 py-2 border rounded-full text-xs font-semibold mb-6 w-max shadow-sm backdrop-blur-sm ${col.color}`}>
                 {col.label} ({groupedLeads[col.id]?.length || 0})
               </div>

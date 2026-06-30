@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Menu } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import Dashboard from "./components/Dashboard";
 import CRMPipeline from "./components/CRMPipeline";
@@ -17,9 +18,9 @@ export default function App() {
   const [view, setView] = useState<"landing" | "login" | "signup" | "app">("landing");
   const [activeTab, setActiveTab] = useState("dashboard");
   const [user, setUser] = useState<any>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = localStorage.getItem("token");
     const storedUser = localStorage.getItem("user");
     if (token && storedUser) {
@@ -64,20 +65,35 @@ export default function App() {
 
   return (
     <div className="flex h-screen w-full bg-[#060606] overflow-hidden text-white font-sans selection:bg-[#FF4F00] selection:text-white relative">
-      <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Sidebar 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+        user={user}
+        onLogout={handleLogout}
+      />
       <CommandBar setActiveTab={setActiveTab} />
       
-      {/* Logout button (Temporary placement for testing) */}
-      <div className="absolute top-4 right-4 z-50">
+      {/* Mobile Header (Only visible on small screens) */}
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/5 z-30 flex items-center justify-between px-4">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded bg-[#FF4F00] flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-white" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+            </svg>
+          </div>
+          <span className="font-bold text-lg tracking-tight text-white">Bookflow.ai</span>
+        </div>
         <button 
-          onClick={handleLogout}
-          className="px-4 py-2 bg-white/[0.05] border border-white/10 hover:bg-white/[0.1] rounded-lg text-sm transition-colors"
+          onClick={() => setIsMobileMenuOpen(true)}
+          className="w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 text-gray-300 hover:text-white"
         >
-          Logout {user?.name ? `(${user.name})` : ''}
+          <Menu className="w-6 h-6" />
         </button>
       </div>
 
-      <main className="flex-1 ml-64 overflow-y-auto w-full h-full p-8 hidden-scrollbar relative">
+      <main className="flex-1 w-full h-full md:ml-64 p-4 pt-20 md:p-8 md:pt-8 overflow-y-auto hidden-scrollbar relative transition-all duration-300">
         {/* Background Ambient Glows */}
         <div className="fixed top-0 left-1/4 w-[800px] h-[400px] bg-[#FF4F00]/5 rounded-full blur-[120px] pointer-events-none -z-10" />
         
