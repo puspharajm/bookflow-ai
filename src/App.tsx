@@ -11,6 +11,16 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Appointments from "./components/Appointments";
 import Revenue from "./components/Revenue";
+import Workflows from "./components/Workflows";
+import RunTimeline from "./components/RunTimeline";
+import Monitoring from "./components/Monitoring";
+import BookingLinks from "./components/BookingLinks";
+import Reports from "./components/Reports";
+import Reconciliation from "./components/Reconciliation";
+import SEOGuide from "./components/SEOGuide";
+import SearchConsole from "./components/SearchConsole";
+import SitemapAudit from "./components/SitemapAudit";
+import Panels from "./components/Panels";
 import ComingSoon from "./components/ComingSoon";
 import { navItems } from "./data";
 
@@ -103,9 +113,19 @@ export default function App() {
         {activeTab === "revenue" && <Revenue />}
         {activeTab === "integrations" && <Integrations />}
         {activeTab === "admin" && <WhiteLabelSettings />}
+        {activeTab === "workflows" && <Workflows />}
+        {activeTab === "timeline" && <RunTimeline />}
+        {activeTab === "monitoring" && <Monitoring />}
+        {activeTab === "booking_links" && <BookingLinks />}
+        {activeTab === "reports" && <Reports />}
+        {activeTab === "reconciliation" && <Reconciliation />}
+        {activeTab === "seo" && <SEOGuide />}
+        {activeTab === "search_console" && <SearchConsole />}
+        {activeTab === "sitemap" && <SitemapAudit />}
+        {activeTab === "panels" && <Panels />}
         
-        {/* Fallback for all other tabs */}
-        {!["dashboard", "crm", "appointments", "revenue", "integrations", "admin"].includes(activeTab) && (
+        {/* Fallback for all other tabs (e.g. settings) */}
+        {!["dashboard", "crm", "appointments", "revenue", "integrations", "admin", "workflows", "timeline", "monitoring", "booking_links", "reports", "reconciliation", "seo", "search_console", "sitemap", "panels"].includes(activeTab) && (
           <ComingSoon 
             title={
               navItems.flatMap(g => g.items).find(i => i.id === activeTab)?.label || 
