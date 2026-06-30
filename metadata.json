@@ -1,0 +1,6 @@
+{
+  "name": "BookFlow AI",
+  "description": "White-Label Appointment Booking + CRM SaaS Platform",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
