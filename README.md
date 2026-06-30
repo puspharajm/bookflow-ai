@@ -1,20 +1,76 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# FlowBook .AI — Workflow OS for Appointments
 
-# Run and deploy your AI Studio app
+FlowBook AI is a premium, automated workflow operating system designed specifically for appointment-based businesses. Unlike traditional scheduling tools that stop at booking, FlowBook AI automates the entire back-office workflow—from data recording and documentation to WhatsApp reminders, CRM pipelines, and autonomous AI agents.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/48e442fc-4dfc-4ba2-a669-4da95a892b4e
+## 🚀 Key Features
 
-## Run Locally
+### 1. Smart Booking & Custom Workflows
+- **Dynamic Availability:** Support for round-robin scheduling, buffer times, and automatic timezone adjustments.
+- **Visual Builder Workflows:** Triggers a chain of events the moment an appointment is booked (e.g., creating CRM leads, generating docs, and alerting team members).
 
-**Prerequisites:**  Node.js
+### 2. Multi-Channel Automation
+- **Google Workspace Integration:** Automatically records bookings in Google Sheets, generates custom documents (Google Docs), and organizes files in client Google Drive folders.
+- **WhatsApp Automation:** Auto-sends instant appointment confirmations, reminders, and follow-ups to minimize no-shows.
+- **Payment Gateway Integrations:** Securely collects consultation fees before meetings using Stripe, Razorpay, or PayPal.
 
+### 3. Autonomous AI Agents (Running 24/7)
+- **Booking Agent:** Manages scheduling queries and bookings end-to-end.
+- **Qualification Agent:** Evaluates and scores leads as soon as they land.
+- **Reminder & Follow-up Agents:** Cuts down no-shows and automatically re-books inactive customers.
+- **CRM & Analytics Agents:** Moves deals along pipelines and highlights top-performing traffic channels.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 4. Super Admin Overview Dashboard
+- **Key Metrics Tracking:** Real-time data on active leads, workflow runs, conversion rates, and revenue.
+- **AI Insights:** Provides summaries of conversions, upcoming follow-ups, and automated lead briefs.
+- **Enterprise-Grade Admin Panel:** Full control over panels, user roles, and white-label branding configurations.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Core:** React 19, TypeScript
+- **Styling:** Tailwind CSS v4
+- **Animations:** Framer Motion (`motion/react`)
+- **Icons:** Lucide React
+- **Bundler & Dev Server:** Vite 6
+
+---
+
+## ⚙️ Getting Started
+
+### Prerequisites
+- Node.js (v18+)
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/puspharajm/bookflow-ai.git
+   cd bookflow-ai
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup:**
+   Create a `.env` or `.env.local` file based on `.env.example` and supply your Gemini API configuration credentials:
+   ```env
+   GEMINI_API_KEY=your_api_key_here
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+   Open your browser and navigate to `http://localhost:3000` to preview.
+
+5. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
