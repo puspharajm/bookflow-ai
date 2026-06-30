@@ -104,7 +104,7 @@ export default function LandingHero({ onStartFree }: LandingHeroProps) {
               transition={{ duration: 0.7, delay: 0.2 }}
               className="text-[1.05rem] text-gray-400 max-w-[480px] leading-[1.75]"
             >
-              Most booking tools stop at scheduling. FlowBook AI keeps going — into Google Sheets, Docs, CRM, WhatsApp, payments and AI agents. <strong className="text-gray-200 font-medium">One trigger. Your whole client workflow.</strong>
+              Most booking tools stop at scheduling. Bookflow.ai keeps going — into Google Sheets, Docs, CRM, WhatsApp, payments and AI agents. <strong className="text-gray-200 font-medium">One trigger. Your whole client workflow.</strong>
             </motion.p>
 
             {/* CTAs */}
@@ -166,7 +166,7 @@ export default function LandingHero({ onStartFree }: LandingHeroProps) {
               <div className="relative rounded-[22px] overflow-hidden border border-white/[0.06] shadow-2xl bg-black aspect-[4/3]">
                 <img
                   src={glowingOrb}
-                  alt="FlowBook AI glowing workflow visualization"
+                  alt="Bookflow.ai glowing workflow visualization"
                   className="w-full h-full object-cover"
                 />
                 {/* Inner gradient overlay */}

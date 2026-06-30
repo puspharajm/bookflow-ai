@@ -25,10 +25,16 @@ export default function Login({ onNavigateToSignup, onLoginSuccess }: LoginProps
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        const text = await res.text();
+        data = JSON.parse(text);
+      } catch (parseError) {
+        throw new Error('Server returned an unexpected response. Please ensure the backend server is running.');
+      }
 
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to login');
+        throw new Error(data?.error || 'Failed to login');
       }
 
       // Save to local storage
@@ -65,7 +71,7 @@ export default function Login({ onNavigateToSignup, onLoginSuccess }: LoginProps
               </svg>
             </div>
             <span className="font-extrabold text-2xl tracking-tight text-white">
-              FlowBook<span className="text-gray-500 font-medium">.AI</span>
+              Bookflow<span className="text-gray-500 font-medium">.ai</span>
             </span>
           </div>
         </div>

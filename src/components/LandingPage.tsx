@@ -50,7 +50,7 @@ export default function LandingPage({ onNavigateToDashboard }: LandingPageProps)
               </svg>
             </div>
             <span className="font-extrabold text-[1.1rem] tracking-tight text-white">
-              FlowBook<span className="text-gray-500 font-medium">.AI</span>
+              Bookflow<span className="text-gray-500 font-medium">.ai</span>
             </span>
           </div>
 
@@ -159,7 +159,7 @@ export default function LandingPage({ onNavigateToDashboard }: LandingPageProps)
               </span>
             </h2>
             <p className="text-gray-400 text-base leading-relaxed max-w-xl mx-auto mb-10">
-              Join thousands of appointment-based businesses already running on FlowBook AI. Free forever on limited plan.
+              Join thousands of appointment-based businesses already running on Bookflow.ai. Free forever on limited plan.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <button
@@ -192,7 +192,7 @@ export default function LandingPage({ onNavigateToDashboard }: LandingPageProps)
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
                   </svg>
                 </div>
-                <span className="font-extrabold text-white tracking-tight">FlowBook<span className="text-gray-500 font-medium">.AI</span></span>
+                <span className="font-extrabold text-white tracking-tight">Bookflow<span className="text-gray-500 font-medium">.ai</span></span>
               </div>
               <p className="text-xs text-gray-600 max-w-xs leading-relaxed">
                 The Workflow OS for appointment-based businesses. One booking triggers everything.
@@ -205,7 +205,7 @@ export default function LandingPage({ onNavigateToDashboard }: LandingPageProps)
             </div>
           </div>
           <div className="border-t border-white/[0.05] pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-gray-600">&copy; 2026 FlowBook .AI. All rights reserved.</p>
+            <p className="text-xs text-gray-600">&copy; 2026 Bookflow.ai. All rights reserved.</p>
             <p className="text-xs text-gray-700">Built with React · TypeScript · Tailwind CSS · Vite</p>
           </div>
         </div>

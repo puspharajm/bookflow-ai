@@ -40,7 +40,7 @@ export default function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           </svg>
         </div>
         <span className="font-bold text-lg tracking-tight text-white">
-          FlowBook
+          Bookflow.ai
         </span>
       </div>
 
