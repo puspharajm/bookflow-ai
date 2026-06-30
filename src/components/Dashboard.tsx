@@ -1,15 +1,84 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowUpRight, TrendingUp, Users, Calendar as CalendarIcon, DollarSign, Zap, Activity } from "lucide-react";
 import { motion } from "motion/react";
 
+interface Appointment {
+  id: string;
+  customerName: string;
+  service: string;
+  date: string;
+  time: string;
+  status: string;
+  staff: string;
+}
+
+interface CRMLead {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  status: string;
+  value: number;
+  lastContact: string;
+}
+
+interface RevenueData {
+  name: string;
+  revenue: number;
+  bookings: number;
+}
+
 export default function Dashboard() {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [leads, setLeads] = useState<CRMLead[]>([]);
+  const [revenue, setRevenue] = useState<RevenueData[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [apptsRes, leadsRes, revRes] = await Promise.all([
+          fetch('/api/appointments'),
+          fetch('/api/leads'),
+          fetch('/api/revenue')
+        ]);
+        
+        if (apptsRes.ok && leadsRes.ok && revRes.ok) {
+          const [apptsData, leadsData, revData] = await Promise.all([
+            apptsRes.json(),
+            leadsRes.json(),
+            revRes.json()
+          ]);
+          setAppointments(apptsData);
+          setLeads(leadsData);
+          setRevenue(revData);
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  // Compute Stats
+  const activeLeadsCount = leads.filter(l => l.status !== 'converted').length;
+  const closedRevenue = leads
+    .filter(l => l.status === 'converted')
+    .reduce((sum, lead) => sum + lead.value, 0);
+  const totalLeadsValue = leads.reduce((sum, lead) => sum + lead.value, 0);
+  const conversionRate = leads.length > 0 
+    ? Math.round((leads.filter(l => l.status === 'converted').length / leads.length) * 100) 
+    : 0;
+
   const statCards = [
-    { title: "Upcoming appointments", value: "0", change: "+12%", changeType: "increase", icon: CalendarIcon },
-    { title: "Active leads", value: "0", change: "+8%", changeType: "increase", icon: Users },
-    { title: "Revenue (closed)", value: "$0", change: "+24%", changeType: "increase", icon: TrendingUp },
-    { title: "Workflow runs", value: "0", change: "100% ok", changeType: "increase", icon: Zap },
-    { title: "Workflow revenue", value: "$0", change: "attributed", changeType: "increase", icon: DollarSign },
-    { title: "Conversion rate", value: "0%", change: "+3%", changeType: "increase", icon: Activity },
+    { title: "Upcoming appointments", value: loading ? "..." : String(appointments.length), change: "+12%", icon: CalendarIcon },
+    { title: "Active leads", value: loading ? "..." : String(activeLeadsCount), change: "+8%", icon: Users },
+    { title: "Revenue (closed)", value: loading ? "..." : `$${closedRevenue}`, change: "+24%", icon: TrendingUp },
+    { title: "Workflow runs", value: loading ? "..." : String(leads.length), change: "100% ok", icon: Zap },
+    { title: "Workflow revenue", value: loading ? "..." : `$${totalLeadsValue}`, change: "attributed", icon: DollarSign },
+    { title: "Conversion rate", value: loading ? "..." : `${conversionRate}%`, change: "+3%", icon: Activity },
   ];
 
   return (
@@ -50,13 +119,32 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bento-card p-6 min-h-[400px] flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-base font-bold text-white">Workflow runs</h2>
-            <span className="text-xs text-gray-500">Last 0 runs</span>
+            <span className="text-xs text-gray-500">Last {appointments.length} runs</span>
           </div>
           
-          <div className="flex-1 flex items-center justify-center">
-            <p className="text-sm text-gray-500">
-              No workflow runs yet. Build a workflow and trigger a booking to see activity here.
-            </p>
+          <div className="flex-1 flex flex-col gap-4 overflow-y-auto hidden-scrollbar pr-2 max-h-[300px]">
+            {appointments.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-sm text-gray-500">
+                  No workflow runs yet. Build a workflow and trigger a booking to see activity here.
+                </p>
+              </div>
+            ) : (
+              appointments.map((appt) => (
+                <div key={appt.id} className="p-4 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between hover:bg-white/10 transition-colors">
+                  <div>
+                    <h4 className="font-bold text-white text-sm">{appt.customerName}</h4>
+                    <p className="text-xs text-gray-400 mt-1">{appt.service} · {appt.staff}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-green-500/10 text-green-500 font-bold border border-green-500/20 uppercase tracking-wider">
+                      {appt.status}
+                    </span>
+                    <p className="text-[10px] text-gray-500 mt-1.5">{appt.date} @ {appt.time}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -83,7 +171,7 @@ export default function Dashboard() {
             <li className="flex gap-3 text-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0 mt-1.5" />
               <span className="text-gray-300">
-                AI brief generated for 12 new leads this week
+                AI brief generated for {leads.length} new leads this week
               </span>
             </li>
           </ul>
